@@ -1,7 +1,21 @@
 {
   "numeros": [
     {
-      "numero": "(11) 90000-0000",
+      "numero": "(11) 98104-6623",
+      "fichaId": "ricardo",
+      "comportamento": "atende"
+    },
+    {
+      "numero": "(11) 97745-2210",
+      "fichaId": "fernanda",
+      "comportamento": "atende"
+    },
+    {
+      "numero": "(11) 3555-7240",
+      "comportamento": "nao_atende"
+    },
+    {
+      "numero": "(11) 3355-0188",
       "comportamento": "nao_atende"
     }
   ]

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480">
+  <rect width="400" height="480" fill="#d9d6cf"/>
+  <rect x="10" y="10" width="380" height="460" fill="none" stroke="#b8b4aa" stroke-width="2"/>
+  <!-- silhueta: cabelo longo -->
+  <g fill="#3a4a5f">
+    <path d="M200 92 C138 92 124 158 130 214 C133 256 126 306 118 352 L162 352 C160 312 152 268 154 224 C156 182 168 146 200 146 C232 146 244 182 246 224 C248 268 240 312 238 352 L282 352 C274 306 267 256 270 214 C276 158 262 92 200 92 Z"/>
+    <ellipse cx="200" cy="188" rx="58" ry="68"/>
+    <rect x="180" y="238" width="40" height="46"/>
+    <path d="M52 480 C52 372 116 326 200 326 C284 326 348 372 348 480 Z"/>
+  </g>
+  <rect x="0" y="436" width="400" height="44" fill="#22303f"/>
+  <text x="200" y="464" font-family="monospace" font-size="16" letter-spacing="5" fill="#f59e0b" text-anchor="middle">FOTO ARQUIVO</text>
+  <path d="M24 24 h26 M24 24 v26 M376 24 h-26 M376 24 v26" stroke="#d97706" stroke-width="4" fill="none"/>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480">
+  <rect width="400" height="480" fill="#d9d6cf"/>
+  <rect x="10" y="10" width="380" height="460" fill="none" stroke="#b8b4aa" stroke-width="2"/>
+  <!-- silhueta: boné + ombros médios -->
+  <g fill="#3a4a5f">
+    <path d="M142 168 C142 108 258 108 258 168 Z"/>
+    <rect x="238" y="158" width="64" height="14" rx="6"/>
+    <ellipse cx="200" cy="198" rx="56" ry="64"/>
+    <rect x="180" y="244" width="40" height="42"/>
+    <path d="M56 480 C56 374 116 328 200 328 C284 328 344 374 344 480 Z"/>
+  </g>
+  <rect x="0" y="436" width="400" height="44" fill="#22303f"/>
+  <text x="200" y="464" font-family="monospace" font-size="16" letter-spacing="5" fill="#f59e0b" text-anchor="middle">FOTO ARQUIVO</text>
+  <path d="M24 24 h26 M24 24 v26 M376 24 h-26 M376 24 v26" stroke="#d97706" stroke-width="4" fill="none"/>
+</svg>

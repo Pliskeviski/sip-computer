@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480">
+  <rect width="400" height="480" fill="#d9d6cf"/>
+  <rect x="10" y="10" width="380" height="460" fill="none" stroke="#b8b4aa" stroke-width="2"/>
+  <!-- silhueta: bob curto na altura do maxilar + óculos em negativo -->
+  <g fill="#3a4a5f">
+    <path d="M200 98 C146 98 134 152 140 206 C142 228 140 244 136 258 L168 258 C164 238 160 220 162 200 C166 160 176 140 200 140 C224 140 234 160 238 200 C240 220 236 238 232 258 L264 258 C260 244 258 228 260 206 C266 152 254 98 200 98 Z"/>
+    <ellipse cx="200" cy="190" rx="56" ry="66"/>
+    <rect x="182" y="240" width="36" height="42"/>
+    <path d="M60 480 C60 378 118 332 200 332 C282 332 340 378 340 480 Z"/>
+  </g>
+  <g stroke="#d9d6cf" stroke-width="6" fill="none">
+    <circle cx="176" cy="196" r="17"/>
+    <circle cx="226" cy="196" r="17"/>
+    <path d="M193 196 h14 M159 193 l-16 -6 M243 193 l16 -6"/>
+  </g>
+  <rect x="0" y="436" width="400" height="44" fill="#22303f"/>
+  <text x="200" y="464" font-family="monospace" font-size="16" letter-spacing="5" fill="#f59e0b" text-anchor="middle">FOTO ARQUIVO</text>
+  <path d="M24 24 h26 M24 24 v26 M376 24 h-26 M376 24 v26" stroke="#d97706" stroke-width="4" fill="none"/>
+</svg>

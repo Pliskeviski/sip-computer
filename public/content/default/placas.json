@@ -1,12 +1,51 @@
 {
   "placas": [
     {
-      "placa": "QRA2B87",
-      "proprietario": "José Almeida Prado",
-      "cpf": "402.118.775-09",
-      "modelo": "Fiat Argo",
+      "placa": "FZK4E19",
+      "proprietario": "Fernanda Salles",
+      "cpf": "315.228.946-02",
+      "modelo": "Hyundai Creta",
+      "cor": "branco",
+      "ano": 2021
+    },
+    {
+      "placa": "BRX-4417",
+      "proprietario": "Antenor Luiz Fagundes",
+      "cpf": "126.540.883-19",
+      "modelo": "Toyota Corolla (táxi)",
+      "cor": "prata",
+      "ano": 2018
+    },
+    {
+      "placa": "PQD3F08",
+      "proprietario": "Evandro Costa Ribeiro",
+      "cpf": "258.117.490-06",
+      "modelo": "Honda CG 160 Titan",
+      "cor": "vermelha",
+      "ano": 2022
+    },
+    {
+      "placa": "MNE-7732",
+      "proprietario": "Dorival Mendonça",
+      "cpf": "064.219.358-44",
+      "modelo": "Volkswagen Gol",
+      "cor": "cinza",
+      "ano": 2011
+    },
+    {
+      "placa": "RBA5E63",
+      "proprietario": "Transportes Rocha ME",
+      "modelo": "Fiat Ducato",
       "cor": "branco",
       "ano": 2019
+    },
+    {
+      "placa": "GYO-2065",
+      "proprietario": "Ivete Soriano Paz",
+      "cpf": "342.806.175-91",
+      "modelo": "Chevrolet Onix",
+      "cor": "preto",
+      "ano": 2016
     }
   ]
 }

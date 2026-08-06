@@ -1,14 +1,87 @@
 {
   "pessoas": [
     {
-      "id": "p-001",
-      "nome": "José Almeida Prado",
-      "cpf": "402.118.775-09",
-      "dataNascimento": "1988-06-02",
-      "endereco": "Rua dos Lírios, 348 — São Paulo/SP",
-      "profissao": "Motorista de aplicativo",
+      "id": "camila-ferraz",
+      "nome": "Camila Ferraz",
+      "cpf": "384.217.905-61",
+      "foto": "foto-camila.svg",
+      "dataNascimento": "1996-04-22",
+      "endereco": "Rua Harmonia, 512 — apto 71, Vila Madalena, São Paulo/SP",
+      "profissao": "Designer gráfica — Estúdio Norte (autônoma)",
       "antecedentes": [],
-      "vinculos": []
+      "vinculos": [
+        { "pessoaId": "julia-paiva", "relacao": "amiga" }
+      ]
+    },
+    {
+      "id": "ricardo-salles",
+      "nome": "Ricardo Salles",
+      "cpf": "291.604.337-85",
+      "foto": "foto-ricardo.svg",
+      "dataNascimento": "1977-11-30",
+      "endereco": "Rua Purpurina, 350 — Vila Madalena, São Paulo/SP",
+      "profissao": "Sócio-administrador do Bar Travessa — Vila Madalena (CNPJ em nome da esposa)",
+      "antecedentes": [
+        "Lesão corporal em briga de bar (2021) — arquivado por falta de representação"
+      ],
+      "vinculos": [
+        { "pessoaId": "fernanda-salles", "relacao": "cônjuge" }
+      ]
+    },
+    {
+      "id": "fernanda-salles",
+      "nome": "Fernanda Salles",
+      "cpf": "315.228.946-02",
+      "foto": "foto-fernanda.svg",
+      "dataNascimento": "1981-03-08",
+      "endereco": "Rua Purpurina, 350 — Vila Madalena, São Paulo/SP",
+      "profissao": "Arquiteta (entre projetos)",
+      "antecedentes": [],
+      "vinculos": [
+        { "pessoaId": "ricardo-salles", "relacao": "cônjuge" }
+      ]
+    },
+    {
+      "id": "julia-paiva",
+      "nome": "Júlia Paiva",
+      "cpf": "402.991.153-27",
+      "foto": "foto-julia.svg",
+      "dataNascimento": "1996-09-14",
+      "endereco": "Rua Fradique Coutinho, 1340 — apto 52, Pinheiros, São Paulo/SP",
+      "profissao": "Publicitária",
+      "antecedentes": [],
+      "vinculos": [
+        { "pessoaId": "camila-ferraz", "relacao": "amiga" }
+      ]
+    },
+    {
+      "id": "cassio-duarte",
+      "nome": "Cássio Emanuel Duarte",
+      "cpf": "187.455.209-73",
+      "foto": "foto-cassio.svg",
+      "dataNascimento": "1985-07-19",
+      "endereco": "Rua Cardeal Arcoverde, 980 — Pinheiros, São Paulo/SP",
+      "profissao": "Auxiliar de logística",
+      "antecedentes": [
+        "Receptação (2019) — arquivado",
+        "Porte irregular de entorpecentes (2022) — transação penal"
+      ],
+      "vinculos": [
+        { "pessoaId": "marlene-quintela", "relacao": "empregadora" }
+      ]
+    },
+    {
+      "id": "marlene-quintela",
+      "nome": "Marlene Aparecida Quintela",
+      "cpf": "098.332.671-40",
+      "foto": "foto-marlene.svg",
+      "dataNascimento": "1962-01-25",
+      "endereco": "Rua Harmonia, 1040 — apto 31, Vila Madalena, São Paulo/SP",
+      "profissao": "Empresária — Lojas Quintela",
+      "antecedentes": [],
+      "vinculos": [
+        { "pessoaId": "cassio-duarte", "relacao": "funcionário" }
+      ]
     }
   ]
 }

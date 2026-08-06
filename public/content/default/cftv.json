@@ -1,13 +1,49 @@
 {
   "gravacoes": [
     {
-      "id": "rec-001",
+      "id": "rec-004",
       "arquivo": "cftv-placeholder-01.mp4",
-      "fonte": "Câmera 01 — Estacionamento",
-      "endereco": "Av. das Palmeiras, 1200 — São Paulo/SP",
-      "intervaloLabel": "18:40 — 19:20",
-      "inicioTs": "2025-03-14T18:40:00-03:00",
-      "duracaoSeg": 2400
+      "fonte": "CÂM 04",
+      "endereco": "Travessa Nestor de Castro, esq. c/ Rua Harmonia — Vila Madalena, São Paulo/SP",
+      "intervaloLabel": "sexta 21h52–21h57",
+      "inicioTs": "2025-03-14T21:52:00-03:00",
+      "duracaoSeg": 300
+    },
+    {
+      "id": "rec-007",
+      "arquivo": "cftv-placeholder-01.mp4",
+      "fonte": "CÂM 07",
+      "endereco": "Rua Harmonia, altura do nº 480 — Vila Madalena, São Paulo/SP",
+      "intervaloLabel": "sexta 22h08–22h13",
+      "inicioTs": "2025-03-14T22:08:00-03:00",
+      "duracaoSeg": 300
+    },
+    {
+      "id": "rec-012",
+      "arquivo": "cftv-placeholder-01.mp4",
+      "fonte": "CÂM 12",
+      "endereco": "Rua Aspicuelta, esq. c/ Rua Fradique Coutinho — Vila Madalena, São Paulo/SP",
+      "intervaloLabel": "sexta 22h25–22h31",
+      "inicioTs": "2025-03-14T22:25:00-03:00",
+      "duracaoSeg": 360
+    },
+    {
+      "id": "rec-021",
+      "arquivo": "cftv-placeholder-01.mp4",
+      "fonte": "CÂM 02",
+      "endereco": "Posto Estrela do Oeste — Av. dos Autonomistas, 4100 — Osasco/SP",
+      "intervaloLabel": "sábado 06h10–06h14",
+      "inicioTs": "2025-03-15T06:10:00-03:00",
+      "duracaoSeg": 240
+    },
+    {
+      "id": "rec-033",
+      "arquivo": "cftv-placeholder-01.mp4",
+      "fonte": "CÂM guarita",
+      "endereco": "Cond. Parque Santana — Rua Voluntários da Pátria, 2300 — Santana, São Paulo/SP",
+      "intervaloLabel": "sexta 20h00–20h03",
+      "inicioTs": "2025-03-14T20:00:00-03:00",
+      "duracaoSeg": 180
     }
   ]
 }

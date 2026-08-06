@@ -1,12 +1,35 @@
 {
   "documentos": [
     {
-      "id": "doc-001",
-      "titulo": "Ofício de abertura — Caso 001",
-      "origem": "2ª Delegacia de Investigações",
+      "id": "doc-necro-001",
+      "titulo": "Laudo necroscópico preliminar — Camila Ferraz",
+      "origem": "Instituto Médico-Legal — Núcleo Oeste",
       "data": "2025-03-15",
+      "corpo": "Corpo de mulher, aprox. 28 anos, localizado na madrugada de sábado (15/03/2025) na Travessa Nestor de Castro, Vila Madalena, por equipe de patrulhamento acionada por moradores. Identidade confirmada por documento encontrado junto ao corpo: Camila Ferraz.\n\nExame externo preliminar indica traumatismo cranioencefálico por instrumento contundente, com ferimento na região parieto-occipital. Presença de escoriações defensivas em antebraços e mãos, compatível com reação da vítima. Ausência de sinais de violência sexual no exame externo.\n\nEstimativa preliminar do intervalo de óbito: entre 22h00 e 23h30 de sexta-feira, 14/03/2025, com base na temperatura corporal e no início de rigidez cadavérica. Amostras de sangue e fluidos encaminhadas ao laboratório de toxicologia. Exame interno completo em andamento; laudo definitivo em até 30 dias.",
+      "anexo": "anexo-pericia.svg"
+    },
+    {
+      "id": "doc-oficio-cftv",
+      "titulo": "Ofício nº 118/2025 — Requisição de imagens de CFTV",
+      "origem": "Central de Perícia Técnica",
+      "data": "2025-03-16",
       "seloOficio": true,
-      "corpo": "Comunicamos a abertura do procedimento investigatório referente ao Caso 001, com requisição de apoio da perícia técnica.\n\nDocumento placeholder — conteúdo completo em fase posterior."
+      "corpo": "Ao 2º Distrito Policial — Seção de Investigações.\n\nNo âmbito do AP 001/2025, comunicamos que foram formalmente requisitadas às administradoras e à subprefeitura as gravações das câmeras de monitoramento da Travessa Nestor de Castro e vias adjacentes (Rua Harmonia e Rua Aspicuelta), no período compreendido entre 21h00 e 00h00 de 14/03/2025.\n\nAs mídias recebidas já se encontram disponíveis na Central de Câmeras deste sistema. Registra-se que parte das câmeras particulares da travessa estava inoperante na data, conforme termo de constatação anexo."
+    },
+    {
+      "id": "doc-digital-001",
+      "titulo": "Relatório de impressões digitais — AP 001/2025",
+      "origem": "Instituto de Criminalística",
+      "data": "2025-03-18",
+      "corpo": "Refere-se às revelações papiloscópicas efetuadas nos objetos recolhidos no local (aparelho celular, bolsa e garrafa de água metálica).\n\nForam revelados fragmentos de impressões digitais e palmares, em sua maioria pertencentes à própria vítima. Três fragmentos não identificados apresentam qualidade insuficiente para confronto automatizado (menos de 8 pontos característicos).\n\nConclusão: resultado inconclusivo. Os fragmentos permanecem arquivados para futuro confronto direto, caso surjam suspeitos para comparação por método direto."
+    },
+    {
+      "id": "doc-oficio-092",
+      "titulo": "Ofício nº 092/2025 — Extravio de documento (Caso 014/2024)",
+      "origem": "3ª Delegacia Distrital",
+      "data": "2025-03-10",
+      "seloOficio": true,
+      "corpo": "À Diretoria de Polícia Judiciária.\n\nInformamos o extravio, nesta unidade, do termo de depoimento nº 07 referente ao Caso 014/2024 (furto qualificado em estabelecimento comercial na região de Santana), prestado pela testemunha Doralice Nogueira Campos em 22/11/2024.\n\nA testemunha foi notificada a comparecer para nova oitiva. Comunicamos, ainda, a abertura de sindicância interna para apuração da responsabilidade funcional pelo extravio."
     }
   ]
 }

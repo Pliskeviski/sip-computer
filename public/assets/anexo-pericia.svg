@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480">
+  <!-- placeholder de foto pericial: asfalto, contorno de giz e marcador de evidência -->
+  <rect width="640" height="480" fill="#232a33"/>
+  <g stroke="#2c3540" stroke-width="2">
+    <path d="M0 120 H640 M0 300 H640 M160 0 V480 M420 0 V480"/>
+  </g>
+  <g stroke="#39434f" stroke-width="1">
+    <path d="M60 60 l40 18 M540 90 l-46 22 M120 400 l52 -14 M500 380 l38 20 M300 430 l44 -8"/>
+  </g>
+  <!-- contorno de giz -->
+  <path d="M250 130 C236 118 214 122 206 138 C198 154 204 172 218 180 C208 196 188 206 172 218 C152 232 138 252 142 276 C146 300 168 312 192 310 C196 330 192 352 200 372 C208 394 232 404 254 396 C268 390 276 376 278 362 C296 372 318 370 332 356 C346 342 348 320 338 304 C352 292 358 272 350 254 C342 236 322 226 304 230 C306 210 300 188 286 174 C272 160 258 146 250 130 Z"
+        fill="none" stroke="#e8e6e1" stroke-width="5" stroke-dasharray="14 9" stroke-linejoin="round"/>
+  <!-- marcador de evidência -->
+  <g>
+    <path d="M420 300 L470 390 L370 390 Z" fill="#d97706"/>
+    <path d="M420 300 L470 390 L442 390 L420 340 Z" fill="#b45309"/>
+    <text x="420" y="372" font-family="monospace" font-weight="bold" font-size="34" fill="#22303f" text-anchor="middle">1</text>
+  </g>
+  <rect x="0" y="432" width="640" height="48" fill="#1a212a"/>
+  <text x="320" y="463" font-family="monospace" font-size="16" letter-spacing="4" fill="#f59e0b" text-anchor="middle">PERÍCIA TÉCNICA — REGISTRO FOTOGRÁFICO</text>
+</svg>

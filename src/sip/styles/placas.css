@@ -1,0 +1,166 @@
+/* Consulta veicular (DETRAN fictício) — classes `plc-`. */
+
+.plc-busca {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  max-width: 520px;
+}
+
+.plc-busca .sip-field {
+  flex: 1;
+}
+
+.plc-input {
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.plc-btn {
+  flex-shrink: 0;
+}
+
+.plc-hint {
+  margin: 20px 0 0;
+  font-family: var(--sip-mono);
+  font-size: 12px;
+  color: var(--sip-text-dim);
+}
+
+/* ---------- terminal de leitura ---------- */
+
+.plc-terminal {
+  margin-top: 20px;
+  max-width: 560px;
+  padding: 18px 20px;
+  background: var(--sip-bg-2);
+  border: 1px solid var(--sip-green-dim);
+  border-radius: 4px;
+  font-family: var(--sip-mono);
+}
+
+.plc-terminal-erro {
+  border-color: var(--sip-red);
+}
+
+.plc-terminal-placa {
+  margin: 0 0 14px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--sip-green);
+}
+
+.plc-terminal-erro .plc-terminal-placa {
+  color: var(--sip-text-dim);
+}
+
+.plc-terminal-msg {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--sip-red);
+}
+
+.plc-terminal-sub {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--sip-text-dim);
+}
+
+.plc-ficha {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.plc-linha {
+  display: flex;
+  gap: 14px;
+  font-size: 13px;
+}
+
+.plc-linha dt {
+  width: 120px;
+  flex-shrink: 0;
+  color: var(--sip-text-dim);
+  letter-spacing: 0.08em;
+}
+
+.plc-linha dd {
+  margin: 0;
+  color: var(--sip-text);
+}
+
+.plc-linha dd.plc-ok {
+  color: var(--sip-green);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+/* ---------- histórico da sessão ---------- */
+
+.plc-historico {
+  margin-top: 24px;
+  max-width: 560px;
+  border-top: 1px solid var(--sip-border-soft);
+  padding-top: 14px;
+}
+
+.plc-historico-titulo {
+  margin: 0 0 10px;
+  font-family: var(--sip-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sip-text-dim);
+}
+
+.plc-historico-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.plc-historico-item {
+  font-family: var(--sip-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--sip-amber);
+  background: var(--sip-bg-2);
+  border: 1px solid var(--sip-amber-dim);
+  border-radius: 3px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.plc-historico-item:hover {
+  background: var(--sip-panel-2);
+}
+
+@media (max-width: 640px) {
+  .plc-busca {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .plc-terminal-placa {
+    font-size: 24px;
+  }
+
+  .plc-linha {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .plc-linha dt {
+    width: auto;
+  }
+}

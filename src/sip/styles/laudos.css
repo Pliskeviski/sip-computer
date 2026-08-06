@@ -1,0 +1,197 @@
+/* Laudos e ofícios — lista + leitor com papel timbrado. Classes `lau-`. */
+
+.lau-hint {
+  margin: 4px 0 0;
+  font-family: var(--sip-mono);
+  font-size: 12px;
+  color: var(--sip-text-dim);
+}
+
+/* ---------- lista de documentos ---------- */
+
+.lau-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 640px;
+}
+
+.lau-item {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--sip-bg-2);
+  border: 1px solid var(--sip-border);
+  border-radius: 3px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--sip-text);
+}
+
+.lau-item:hover {
+  border-color: var(--sip-amber-dim);
+  background: var(--sip-panel-2);
+}
+
+.lau-item-titulo {
+  font-size: 14px;
+  padding-right: 130px;
+}
+
+.lau-item-meta {
+  display: flex;
+  gap: 14px;
+  font-family: var(--sip-mono);
+  font-size: 11px;
+  color: var(--sip-text-dim);
+}
+
+.lau-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-family: var(--sip-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sip-amber);
+  border: 1px solid var(--sip-amber-dim);
+  border-radius: 2px;
+  padding: 3px 6px;
+  white-space: nowrap;
+}
+
+/* ---------- leitor ---------- */
+
+.lau-voltar {
+  margin-bottom: 16px;
+}
+
+.lau-doc {
+  max-width: 720px;
+  background: var(--sip-bg-2);
+  border: 1px solid var(--sip-border);
+  border-top: 3px solid var(--sip-amber);
+  border-radius: 4px;
+  padding: 26px 30px;
+}
+
+.lau-doc-head {
+  position: relative;
+  text-align: center;
+  border-bottom: 1px solid var(--sip-border-soft);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.lau-doc-orgao {
+  margin: 0;
+  font-family: var(--sip-mono);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--sip-text);
+}
+
+.lau-doc-origem {
+  margin: 6px 0 0;
+  font-family: var(--sip-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--sip-text-dim);
+}
+
+.lau-doc-oficio {
+  margin: 12px 0 0;
+  font-family: var(--sip-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--sip-amber);
+}
+
+.lau-selo {
+  display: inline-block;
+  margin-top: 12px;
+  font-family: var(--sip-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--sip-amber);
+  border: 2px solid var(--sip-amber-dim);
+  border-radius: 3px;
+  padding: 5px 12px;
+  transform: rotate(-1.5deg);
+}
+
+.lau-doc-titulo {
+  margin: 0 0 16px;
+  font-family: var(--sip-mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--sip-text);
+}
+
+.lau-doc-corpo {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--sip-text);
+}
+
+.lau-doc-corpo p {
+  margin: 0 0 14px;
+}
+
+/* ---------- anexo ---------- */
+
+.lau-anexo {
+  margin: 22px 0 0;
+  border: 1px dashed var(--sip-border);
+  border-radius: 4px;
+  padding: 14px;
+  background: var(--sip-panel);
+}
+
+.lau-anexo-titulo {
+  margin-bottom: 10px;
+  font-family: var(--sip-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--sip-text-dim);
+}
+
+.lau-anexo img {
+  display: block;
+  max-width: 100%;
+  border-radius: 3px;
+}
+
+/* ---------- responsivo ---------- */
+
+@media (max-width: 640px) {
+  .lau-doc {
+    padding: 18px 16px;
+  }
+
+  .lau-item-titulo {
+    padding-right: 0;
+  }
+
+  .lau-badge {
+    position: static;
+    align-self: flex-start;
+    margin-top: 4px;
+  }
+
+  .lau-item-meta {
+    flex-direction: column;
+    gap: 2px;
+  }
+}

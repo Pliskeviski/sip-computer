@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- brasão fictício — SIP -->
+  <path d="M256 36 L436 108 V272 C436 392 352 452 256 496 C160 452 76 392 76 272 V108 Z" fill="#22303f"/>
+  <path d="M256 62 L412 124 V268 C412 372 340 426 256 466 C172 426 100 372 100 268 V124 Z" fill="none" stroke="#d97706" stroke-width="8"/>
+  <polygon points="256,138 282,210 358,212 297,259 318,332 256,288 194,332 215,259 154,212 230,210" fill="#f59e0b"/>
+  <rect x="176" y="368" width="160" height="44" rx="6" fill="#d97706"/>
+  <text x="256" y="399" font-family="monospace" font-weight="bold" font-size="30" letter-spacing="8" fill="#22303f" text-anchor="middle">SIP</text>
+</svg>
