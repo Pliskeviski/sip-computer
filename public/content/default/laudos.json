@@ -1,0 +1,12 @@
+{
+  "documentos": [
+    {
+      "id": "doc-001",
+      "titulo": "Ofício de abertura — Caso 001",
+      "origem": "2ª Delegacia de Investigações",
+      "data": "2025-03-15",
+      "seloOficio": true,
+      "corpo": "Comunicamos a abertura do procedimento investigatório referente ao Caso 001, com requisição de apoio da perícia técnica.\n\nDocumento placeholder — conteúdo completo em fase posterior."
+    }
+  ]
+}

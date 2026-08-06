@@ -1,0 +1,7 @@
+[
+  { "id": "cftv", "label": "Central de Câmeras", "icon": "◉", "type": "cftv", "dataRef": "cftv" },
+  { "id": "placas", "label": "Consulta de Placas", "icon": "▤", "type": "placas", "dataRef": "placas" },
+  { "id": "pessoas", "label": "Registro de Pessoas", "icon": "◈", "type": "pessoas", "dataRef": "pessoas" },
+  { "id": "laudos", "label": "Laudos e Ofícios", "icon": "§", "type": "laudos", "dataRef": "laudos" },
+  { "id": "interrogatorio", "label": "Interrogatório", "icon": "☎", "type": "interrogatorio", "dataRef": "numeros" }
+]

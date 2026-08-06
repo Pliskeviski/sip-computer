@@ -1,0 +1,13 @@
+{
+  "gravacoes": [
+    {
+      "id": "rec-001",
+      "arquivo": "cftv-placeholder-01.mp4",
+      "fonte": "Câmera 01 — Estacionamento",
+      "endereco": "Av. das Palmeiras, 1200 — São Paulo/SP",
+      "intervaloLabel": "18:40 — 19:20",
+      "inicioTs": "2025-03-14T18:40:00-03:00",
+      "duracaoSeg": 2400
+    }
+  ]
+}

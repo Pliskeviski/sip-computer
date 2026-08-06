@@ -1,0 +1,14 @@
+{
+  "pessoas": [
+    {
+      "id": "p-001",
+      "nome": "José Almeida Prado",
+      "cpf": "402.118.775-09",
+      "dataNascimento": "1988-06-02",
+      "endereco": "Rua dos Lírios, 348 — São Paulo/SP",
+      "profissao": "Motorista de aplicativo",
+      "antecedentes": [],
+      "vinculos": []
+    }
+  ]
+}

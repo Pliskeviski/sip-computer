@@ -1,0 +1,12 @@
+{
+  "placas": [
+    {
+      "placa": "QRA2B87",
+      "proprietario": "José Almeida Prado",
+      "cpf": "402.118.775-09",
+      "modelo": "Fiat Argo",
+      "cor": "branco",
+      "ano": 2019
+    }
+  ]
+}
