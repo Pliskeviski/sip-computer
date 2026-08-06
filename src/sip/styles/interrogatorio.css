@@ -40,6 +40,18 @@
   border-color: var(--sip-amber);
 }
 
+.itg-tab-badge {
+  margin-left: 8px;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--sip-red);
+  animation: itg-blink 1.4s infinite;
+}
+
+.itg-mode.active .itg-tab-badge {
+  color: #7a1f1f;
+}
+
 /* ---------- aviso de sistema (sem chave) ---------- */
 
 .itg-aviso {
@@ -371,91 +383,189 @@
   color: var(--sip-green-dim);
 }
 
-/* ---------- chat por texto ---------- */
+/* ---------- zaptalk (conversa por texto com cara de app de mensagens) ----------
+   Classes `zt-`. A moldura é SIP (escura, mono); a janela da conversa
+   reproduz o ZapTalk do phone-simulator: fundo claro, balões brancos e
+   verdes (#25d366), cabeçalho com avatar + nome + "online". */
 
-.itg-chat-wrap {
+.zt-wrap {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-height: 220px;
+  align-items: center;
+  gap: 12px;
 }
 
-.itg-chat {
-  height: 340px;
+.zt-form {
+  width: min(420px, 100%);
+}
+
+.zt-phone {
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--sip-border);
+  border-radius: 14px;
+  background: #f2f2f7;
+  color: #1c1c1e;
+  font-family: var(--sip-sans);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- cabeçalho do contato ---------- */
+
+.zt-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.12);
+}
+
+.zt-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.zt-header-texts {
+  min-width: 0;
+}
+
+.zt-header-nome {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0b141a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zt-header-status {
+  font-size: 12px;
+  color: rgba(60, 60, 67, 0.55);
+}
+
+.zt-header-status.digitando {
+  color: #25d366;
+}
+
+/* ---------- área de mensagens ---------- */
+
+.zt-msgs {
+  height: 360px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: var(--sip-bg-2);
-  border: 1px solid var(--sip-border-soft);
-  border-radius: 4px;
-  padding: 14px;
+  padding: 12px 10px 10px;
+  background: #f2f2f7;
 }
 
-.itg-chat-vazio {
+.zt-vazio {
   margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  max-width: 300px;
   text-align: center;
-  font-size: 12px;
-  color: var(--sip-text-dim);
-  max-width: 320px;
+  font-size: 13px;
+  color: rgba(60, 60, 67, 0.6);
+  padding: 24px 8px;
 }
 
-.itg-msg {
+.zt-vazio strong {
+  font-family: var(--sip-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: rgba(60, 60, 67, 0.75);
+}
+
+/* ---------- balões ---------- */
+
+.zt-bubble-row {
+  display: flex;
+  margin: 2px 0;
+}
+
+.zt-bubble-row.mine {
+  justify-content: flex-end;
+}
+
+.zt-bubble {
   max-width: 78%;
-  font-size: 13px;
-  line-height: 1.5;
-  border-radius: 6px;
-  padding: 8px 12px;
+  background: #fff;
+  border-radius: 18px;
+  border-bottom-left-radius: 6px;
+  padding: 8px 12px 5px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07);
+  font-size: 14px;
+  line-height: 1.4;
+  color: #0b141a;
+}
+
+.zt-bubble.mine {
+  background: #25d366;
+  color: #fff;
+  border-radius: 18px;
+  border-bottom-right-radius: 6px;
+}
+
+.zt-bubble-text {
   white-space: pre-wrap;
 }
 
-.itg-msg.investigador {
-  align-self: flex-end;
-  color: #0a0f14;
-  background: var(--sip-green);
-  border-bottom-right-radius: 2px;
+.zt-bubble-meta {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  opacity: 0.6;
+  margin-top: 2px;
 }
 
-.itg-msg.suspeito {
-  align-self: flex-start;
-  color: var(--sip-text);
-  background: var(--sip-panel-2);
-  border: 1px solid var(--sip-border);
-  border-bottom-left-radius: 2px;
+.zt-bubble.mine .zt-ticks {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 11px;
+  letter-spacing: -0.12em;
+  opacity: 1;
 }
 
-.itg-msg-quem {
-  display: block;
-  margin-bottom: 3px;
-  font-family: var(--sip-mono);
-  font-size: 9px;
-  letter-spacing: 0.16em;
-  opacity: 0.75;
-}
+/* indicador de digitação dentro de um balão branco */
 
-.itg-typing {
+.zt-typing {
   display: flex;
   gap: 5px;
   align-items: center;
+  padding: 12px 14px;
 }
 
-.itg-typing span {
-  width: 6px;
-  height: 6px;
+.zt-typing span {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--sip-text-dim);
-  animation: itg-dot 1.2s infinite;
+  background: rgba(60, 60, 67, 0.45);
+  animation: zt-dot 1.2s infinite;
 }
 
-.itg-typing span:nth-child(2) {
+.zt-typing span:nth-child(2) {
   animation-delay: 0.2s;
 }
 
-.itg-typing span:nth-child(3) {
+.zt-typing span:nth-child(3) {
   animation-delay: 0.4s;
 }
 
-@keyframes itg-dot {
+@keyframes zt-dot {
   0%,
   60%,
   100% {
@@ -468,54 +578,81 @@
   }
 }
 
+/* ---------- barra de entrada ---------- */
+
+.zt-inputbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 12px;
+  background: rgba(249, 249, 251, 0.92);
+  border-top: 1px solid rgba(60, 60, 67, 0.12);
+}
+
+.zt-input {
+  flex: 1;
+  background: #fff;
+  border: 1px solid rgba(60, 60, 67, 0.16);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 14.5px;
+  color: #1c1c1e;
+  outline: none;
+}
+
+.zt-input:focus {
+  border-color: rgba(37, 211, 102, 0.6);
+}
+
+.zt-send {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.zt-send:hover:not(:disabled) {
+  background: #1fbd5a;
+}
+
+.zt-send:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---------- avisos e ações (chrome SIP ao redor da janela) ---------- */
+
+.zt-aviso {
+  width: min(420px, 100%);
+}
+
+.zt-actions {
+  display: flex;
+  gap: 8px;
+  width: min(420px, 100%);
+}
+
+.zt-actions .itg-limpar {
+  flex: 1;
+  padding: 10px 0;
+}
+
 .itg-chat-erro {
   margin: 0;
+  width: min(420px, 100%);
   font-family: var(--sip-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
   color: var(--sip-red);
-}
-
-.itg-chat-form {
-  display: flex;
-  gap: 8px;
-}
-
-.itg-chat-input {
-  flex: 1;
-  font-family: var(--sip-sans);
-  font-size: 14px;
-  color: var(--sip-text);
-  background: var(--sip-bg-2);
-  border: 1px solid var(--sip-border);
-  border-radius: 3px;
-  padding: 10px 12px;
-  outline: none;
-}
-
-.itg-chat-input:focus {
-  border-color: var(--sip-amber-dim);
-}
-
-.itg-enviar {
-  font-family: var(--sip-mono);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  color: #0a0f14;
-  background: var(--sip-amber);
-  border: 1px solid var(--sip-amber);
-  border-radius: 3px;
-  padding: 0 18px;
-  cursor: pointer;
-}
-
-.itg-enviar:hover:not(:disabled) {
-  background: #f2b456;
-}
-
-.itg-enviar:disabled {
-  opacity: 0.5;
-  cursor: default;
 }
 
 .itg-limpar {
@@ -547,11 +684,7 @@
     grid-template-columns: 1fr;
   }
 
-  .itg-chat {
-    height: 300px;
-  }
-
-  .itg-msg {
+  .zt-bubble {
     max-width: 88%;
   }
 }
@@ -561,17 +694,7 @@
     flex-direction: column;
   }
 
-  .itg-chat-form {
-    flex-wrap: wrap;
-  }
-
-  .itg-chat-input {
-    flex: 1 1 100%;
-  }
-
-  .itg-enviar,
-  .itg-limpar {
-    flex: 1;
-    padding: 10px 0;
+  .zt-msgs {
+    height: 320px;
   }
 }

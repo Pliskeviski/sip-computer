@@ -411,3 +411,85 @@
     text-align: right;
   }
 }
+
+/* ---------- marcações do investigador ---------- */
+
+.cftv-btn-marca {
+  margin-left: auto;
+  color: var(--sip-amber);
+  border-color: var(--sip-amber-dim);
+  letter-spacing: 0.08em;
+}
+
+.cftv-btn-marca:hover:not(:disabled) {
+  background: var(--sip-amber);
+  color: #0a0f14;
+}
+
+.cftv-marca-tick {
+  position: absolute;
+  top: 0;
+  width: 4px;
+  height: 26px;
+  padding: 0;
+  transform: translateX(-50%);
+  background: var(--sip-amber);
+  border: none;
+  border-radius: 1px;
+  cursor: pointer;
+  z-index: 3;
+  pointer-events: auto;
+}
+
+.cftv-marca-tick:hover {
+  background: #f2b456;
+  box-shadow: 0 0 6px rgba(232, 163, 61, 0.8);
+}
+
+.cftv-marcas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.cftv-marcas-label {
+  color: var(--sip-text-dim);
+  letter-spacing: 0.1em;
+}
+
+.cftv-marca-chip {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--sip-amber-dim);
+  border-radius: 3px;
+  overflow: hidden;
+  font-family: var(--sip-font-mono, monospace);
+}
+
+.cftv-marca-go,
+.cftv-marca-del {
+  background: rgba(232, 163, 61, 0.08);
+  color: var(--sip-amber);
+  border: none;
+  padding: 3px 8px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.cftv-marca-go:hover {
+  background: var(--sip-amber);
+  color: #0a0f14;
+}
+
+.cftv-marca-del {
+  border-left: 1px solid var(--sip-amber-dim);
+  color: var(--sip-text-dim);
+}
+
+.cftv-marca-del:hover {
+  background: var(--sip-red, #ff453a);
+  color: #0a0f14;
+}

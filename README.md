@@ -71,8 +71,9 @@ system prompt é montado a partir da ficha secreta do personagem (`server/fichas
 personalidade, gatilhos, segredos com condições de admissão, álibi com furos e guardrails.
 Há fallback de texto em `/api/chat` (modelo `gpt-4o-mini`).
 
-A Realtime API é cobrada por minuto de áudio — o modelo padrão é `gpt-realtime-mini`
-justamente para conter custo, e as fichas têm `controle_de_ligacao` para encerrar
+A Realtime API é cobrada por minuto de áudio — o modelo padrão é `gpt-realtime`
+(qualidade máxima); para conter custo, use `OPENAI_MODEL=gpt-realtime-mini` (~3× mais
+barato, qualidade inferior). As fichas têm `controle_de_ligacao` para encerrar
 ligações longas (~2–3 min). Evite deixar sessões abertas sem uso.
 
 ## Convenções de conteúdo

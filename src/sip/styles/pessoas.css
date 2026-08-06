@@ -275,3 +275,16 @@
     gap: 4px;
   }
 }
+
+/* "Nova consulta" em destaque branco para máxima visibilidade. */
+.pes-nova-consulta {
+  background: #f4f7fa;
+  color: #0a0f14;
+  border: 1px solid #f4f7fa;
+  font-weight: 700;
+}
+
+.pes-nova-consulta:hover {
+  background: #ffffff;
+  border-color: #ffffff;
+}

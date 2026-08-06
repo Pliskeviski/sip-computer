@@ -134,7 +134,7 @@ export function PessoasModule({ module, api }: { module: ModuleEntry; api: Modul
                   ← Voltar
                 </button>
               )}
-              <button type="button" className="sip-button sip-button-ghost" onClick={sairDaFicha}>
+              <button type="button" className="sip-button pes-nova-consulta" onClick={sairDaFicha}>
                 Nova consulta
               </button>
             </div>

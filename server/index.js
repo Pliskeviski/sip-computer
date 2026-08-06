@@ -21,7 +21,7 @@ const CONTENT_DIR =
 const FICHAS_DIR = path.join(__dirname, "fichas");
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const MODEL = process.env.OPENAI_MODEL || "gpt-realtime-mini";
+const MODEL = process.env.OPENAI_MODEL || "gpt-realtime";
 const CHAT_MODEL = process.env.OPENAI_CHAT_MODEL || "gpt-4o-mini";
 const PORT = process.env.PORT || 3355;
 

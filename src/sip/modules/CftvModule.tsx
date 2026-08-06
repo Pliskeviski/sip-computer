@@ -59,8 +59,48 @@ export function CftvModule({ module, api }: { module: ModuleEntry; api: ModuleAp
   const [erroMidia, setErroMidia] = useState(false);
   const [thumbs, setThumbs] = useState<string[]>([]);
   const [hover, setHover] = useState<{ x: number; frac: number } | null>(null);
+  // Marcações do investigador (anotações do jogador — não vêm da gravação).
+  const [marcas, setMarcas] = useState<number[]>([]);
 
   const duracao = duracaoMidia ?? sel?.duracaoSeg ?? 0;
+  const casoId = api.content.system.casoId;
+  const marcasKey = sel ? `sip:${casoId}:cftv-marcas:${sel.id}` : null;
+
+  // Carrega as marcações persistidas da gravação selecionada.
+  useEffect(() => {
+    if (!marcasKey) return;
+    try {
+      const raw = localStorage.getItem(marcasKey);
+      const arr = raw ? (JSON.parse(raw) as unknown) : [];
+      setMarcas(
+        Array.isArray(arr) ? arr.filter((n): n is number => typeof n === "number") : [],
+      );
+    } catch {
+      setMarcas([]);
+    }
+  }, [marcasKey]);
+
+  function persistirMarcas(prox: number[]) {
+    setMarcas(prox);
+    if (marcasKey) {
+      try {
+        localStorage.setItem(marcasKey, JSON.stringify(prox));
+      } catch {
+        // storage cheio/indisponível — marcações ficam só em memória
+      }
+    }
+  }
+
+  function marcar() {
+    if (erroMidia || duracao <= 0) return;
+    const t = Math.round(tempoAtual * 30) / 30;
+    if (marcas.some((m) => Math.abs(m - t) < 0.5)) return;
+    persistirMarcas([...marcas, t].sort((a, b) => a - b));
+  }
+
+  function removerMarca(t: number) {
+    persistirMarcas(marcas.filter((m) => m !== t));
+  }
 
   function selecionar(g: GravacaoCftv) {
     setSelecionadaId(g.id);
@@ -194,6 +234,11 @@ export function CftvModule({ module, api }: { module: ModuleEntry; api: ModuleAp
       case "8":
         setVelocidade(Number(e.key));
         break;
+      case "m":
+      case "M":
+        e.preventDefault();
+        marcar();
+        break;
     }
   }
 
@@ -316,6 +361,15 @@ export function CftvModule({ module, api }: { module: ModuleEntry; api: ModuleAp
                 <span className="cftv-tempo">
                   {fmtTempo(tempoAtual)} / {fmtTempo(duracao)}
                 </span>
+                <button
+                  type="button"
+                  className="cftv-btn cftv-btn-marca"
+                  onClick={marcar}
+                  disabled={erroMidia || duracao <= 0}
+                  title="Marcar este momento (M)"
+                >
+                  ⚑ MARCAR
+                </button>
               </div>
 
               <div
@@ -335,6 +389,18 @@ export function CftvModule({ module, api }: { module: ModuleEntry; api: ModuleAp
                   onChange={(e) => buscar(Number(e.target.value))}
                   aria-label="Linha do tempo da gravação"
                 />
+                {duracao > 0 &&
+                  marcas.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      className="cftv-marca-tick"
+                      style={{ left: `${(t / duracao) * 100}%` }}
+                      onClick={() => buscar(t)}
+                      title={`Ir para ${fmtTempo(t)}`}
+                      aria-label={`Marcação em ${fmtTempo(t)}`}
+                    />
+                  ))}
                 {hover && !erroMidia && (
                   <div className="cftv-tooltip" style={{ left: hover.x }}>
                     {hoverThumb && (
@@ -351,10 +417,38 @@ export function CftvModule({ module, api }: { module: ModuleEntry; api: ModuleAp
                 </div>
               )}
 
+              {marcas.length > 0 && (
+                <div className="cftv-marcas" aria-label="Suas marcações">
+                  <span className="cftv-marcas-label">SUAS MARCAÇÕES:</span>
+                  {marcas.map((t) => (
+                    <span key={t} className="cftv-marca-chip">
+                      <button
+                        type="button"
+                        className="cftv-marca-go"
+                        onClick={() => buscar(t)}
+                        title={`Ir para ${fmtTempo(t)}`}
+                      >
+                        ⚑ {fmtTempo(t)}
+                      </button>
+                      <button
+                        type="button"
+                        className="cftv-marca-del"
+                        onClick={() => removerMarca(t)}
+                        title="Remover marcação"
+                        aria-label={`Remover marcação de ${fmtTempo(t)}`}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+
               <p className="cftv-atalhos">
                 Atalhos: <kbd>espaço</kbd> reproduz/pausa · <kbd>←</kbd>
                 <kbd>→</kbd> quadro a quadro · <kbd>↑</kbd>
-                <kbd>↓</kbd> ou <kbd>1</kbd>/<kbd>2</kbd>/<kbd>4</kbd>/<kbd>8</kbd> velocidade
+                <kbd>↓</kbd> ou <kbd>1</kbd>/<kbd>2</kbd>/<kbd>4</kbd>/<kbd>8</kbd> velocidade ·{" "}
+                <kbd>M</kbd> marcar momento
               </p>
             </div>
           )}

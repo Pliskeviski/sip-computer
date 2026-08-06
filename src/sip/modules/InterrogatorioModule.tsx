@@ -1,16 +1,19 @@
-// Interrogatório — linha segura: discagem estilo CSI, chamada de voz via
-// OpenAI Realtime (WebRTC, portado de arquivo-morto-voz/public/index.html) e
-// entrevista por texto como fallback (POST /api/chat).
+// Interrogatório — linha segura: dois fluxos separados em abas.
+// LIGAÇÃO: discagem estilo CSI, chamada de voz via OpenAI Realtime (WebRTC,
+// portado de arquivo-morto-voz/public/index.html).
+// ZAPTALK: conversa por texto com cara de ZapTalk (o app de mensagens do
+// phone-simulator), via POST /api/chat.
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ModuleEntry, NumerosFile } from "../../engine/types";
 import type { ModuleApi } from "../registry";
 import { Panel } from "../components/Panel";
 import "../styles/interrogatorio.css";
 
-type ChatMsg = { role: "user" | "assistant"; content: string };
-type TranscriptLine = { who: "suspeito" | "investigador"; text: string };
+type ChatMsg = { role: "user" | "assistant"; content: string; ts?: string };
+type TranscriptLine = { who: "suspeito" | "investigador"; text: string; responseId?: string };
 type CallPhase = "idle" | "chamando" | "conectando" | "em_chamada" | "falha";
-type Mode = "voz" | "texto";
+type Tab = "ligacao" | "zaptalk";
+type ZtErro = "" | "sem_zaptalk" | "indisponivel" | "falha";
 
 // ---------- número ----------
 
@@ -45,13 +48,17 @@ function loadChat(casoId: string, numero: string): ChatMsg[] {
     const raw = localStorage.getItem(chatStorageKey(casoId, numero));
     const parsed: unknown = raw ? JSON.parse(raw) : [];
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (m): m is ChatMsg =>
-        !!m &&
-        typeof m === "object" &&
-        ((m as ChatMsg).role === "user" || (m as ChatMsg).role === "assistant") &&
-        typeof (m as ChatMsg).content === "string",
-    );
+    return parsed
+      .filter(
+        (m): m is ChatMsg =>
+          !!m &&
+          typeof m === "object" &&
+          ((m as ChatMsg).role === "user" || (m as ChatMsg).role === "assistant") &&
+          typeof (m as ChatMsg).content === "string",
+      )
+      .map((m) =>
+        typeof m.ts === "string" ? { role: m.role, content: m.content, ts: m.ts } : { role: m.role, content: m.content },
+      );
   } catch {
     return [];
   }
@@ -80,6 +87,38 @@ function fmtSegundos(s: number): string {
   return `${m}:${String(s % 60).padStart(2, "0")}`;
 }
 
+function fmtHora(iso?: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+// ---------- avatar genérico (mesma linguagem do phone-simulator) ----------
+
+const AVATAR_COLORS = [
+  "#5b8def",
+  "#9b51e0",
+  "#e15f41",
+  "#27ae60",
+  "#c0790b",
+  "#c13584",
+  "#007d74",
+];
+
+function colorFor(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+
+function initialsOf(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 // ---------- componente ----------
 
 export function InterrogatorioModule({
@@ -93,10 +132,10 @@ export function InterrogatorioModule({
   const numeros = data?.numeros ?? [];
   const casoId = api.content.system.casoId;
 
-  const [digits, setDigits] = useState("");
-  const [mode, setMode] = useState<Mode>("voz");
+  const [tab, setTab] = useState<Tab>("ligacao");
 
-  // voz
+  // ---------- ligação (voz) ----------
+  const [digits, setDigits] = useState("");
   const [phase, setPhase] = useState<CallPhase>("idle");
   const [failMsg, setFailMsg] = useState("");
   const [nome, setNome] = useState("");
@@ -105,23 +144,25 @@ export function InterrogatorioModule({
   const [semChave, setSemChave] = useState(false);
   const [micNegado, setMicNegado] = useState(false);
 
-  // texto
+  // ---------- zaptalk (texto) ----------
+  const [ztDigits, setZtDigits] = useState("");
+  const [ztAtivo, setZtAtivo] = useState(false);
+  const [ztNome, setZtNome] = useState("");
   const [chat, setChat] = useState<ChatMsg[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatEnviando, setChatEnviando] = useState(false);
-  const [chatErro, setChatErro] = useState("");
+  const [ztErro, setZtErro] = useState<ZtErro>("");
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const flavorIdxRef = useRef(0);
-  // id da resposta do modelo cuja transcrição está em andamento
-  const pendingResponseRef = useRef<string | null>(null);
   const transcriptScrollRef = useRef<HTMLDivElement | null>(null);
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
 
   const numeroValido = digits.length >= 10;
+  const ztNumeroValido = ztDigits.length >= 10;
   const emLigacao = phase === "chamando" || phase === "conectando" || phase === "em_chamada";
 
   // ---------- ciclo de vida da chamada ----------
@@ -151,7 +192,6 @@ export function InterrogatorioModule({
       }
       audioRef.current = null;
     }
-    pendingResponseRef.current = null;
     setPhase((p) => (p === "falha" ? p : "idle"));
     setSegundos(0);
   }, []);
@@ -168,27 +208,36 @@ export function InterrogatorioModule({
       const delta = String(msg.delta ?? "");
       if (!delta) return;
       setTranscript((prev) => {
-        if (pendingResponseRef.current === responseId && prev.length > 0) {
+        const last = prev[prev.length - 1];
+        if (last && last.who === "suspeito" && last.responseId === responseId) {
           const next = [...prev];
-          const last = next[next.length - 1];
           next[next.length - 1] = { ...last, text: last.text + delta };
           return next;
         }
-        pendingResponseRef.current = responseId;
-        return [...prev, { who: "suspeito", text: delta }];
+        return [...prev, { who: "suspeito", responseId, text: delta }];
       });
     } else if (type === "response.output_audio_transcript.done") {
+      const responseId = String(msg.response_id ?? "");
       const full = String(msg.transcript ?? "");
       if (!full) return;
       setTranscript((prev) => {
-        if (pendingResponseRef.current != null && prev.length > 0) {
+        let idx = -1;
+        for (let i = prev.length - 1; i >= 0; i--) {
+          if (prev[i].who === "suspeito" && prev[i].responseId === responseId) {
+            idx = i;
+            break;
+          }
+        }
+        if (idx >= 0) {
+          if (prev[idx].text === full) return prev;
           const next = [...prev];
-          next[next.length - 1] = { who: "suspeito", text: full };
+          next[idx] = { ...next[idx], text: full };
           return next;
         }
-        return [...prev, { who: "suspeito", text: full }];
+        const last = prev[prev.length - 1];
+        if (last && last.who === "suspeito" && last.text === full) return prev;
+        return [...prev, { who: "suspeito", responseId, text: full }];
       });
-      pendingResponseRef.current = null;
     } else if (type === "conversation.item.input_audio_transcription.completed") {
       const full = String(msg.transcript ?? "");
       if (!full) return;
@@ -221,7 +270,7 @@ export function InterrogatorioModule({
         desligar();
         setMicNegado(true);
         setPhase("falha");
-        setFailMsg("MICROFONE BLOQUEADO — AUTORIZE O ACESSO OU USE O MODO TEXTO");
+        setFailMsg("MICROFONE BLOQUEADO — AUTORIZE O ACESSO OU USE O ZAPTALK");
         return;
       }
       streamRef.current = stream;
@@ -332,62 +381,78 @@ export function InterrogatorioModule({
     }
   }, [digits, numeroValido, emLigacao, numeros, conectarWebRTC, desligar]);
 
-  // ---------- modo texto ----------
+  // ---------- zaptalk ----------
 
-  // carrega o histórico persistido do número discado ao entrar no modo texto
-  useEffect(() => {
-    if (mode !== "texto") return;
-    setChat(digits ? loadChat(casoId, digits) : []);
-    setChatErro("");
-  }, [mode, digits, casoId]);
+  // abre a conversa do número digitado, carregando o histórico persistido
+  const iniciarConversa = useCallback(() => {
+    if (!ztNumeroValido) return;
+    setChat(loadChat(casoId, ztDigits));
+    setZtNome("");
+    setZtErro("");
+    setChatInput("");
+    setZtAtivo(true);
+  }, [ztDigits, ztNumeroValido, casoId]);
 
   const enviarTexto = useCallback(async () => {
     const content = chatInput.trim();
-    if (!content || chatEnviando || !numeroValido) return;
-    const next: ChatMsg[] = [...chat, { role: "user", content }];
+    if (!content || chatEnviando || !ztNumeroValido) return;
+    const next: ChatMsg[] = [
+      ...chat,
+      { role: "user", content, ts: new Date().toISOString() },
+    ];
     setChat(next);
-    saveChat(casoId, digits, next);
+    saveChat(casoId, ztDigits, next);
     setChatInput("");
-    setChatErro("");
+    setZtErro("");
     setChatEnviando(true);
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ numero: digits, history: next }),
+        body: JSON.stringify({ numero: ztDigits, history: next }),
       });
       if (res.status === 503) {
-        setChatErro("SISTEMA DE ESCUTA INDISPONÍVEL — chave não configurada.");
+        setZtErro("indisponivel");
         return;
       }
       if (res.status === 404) {
-        setChatErro("Este número não consta no cadastro de escutas autorizadas.");
+        // desfaz a mensagem otimista — na ficção, ela nunca saiu
+        setChat(chat);
+        saveChat(casoId, ztDigits, chat);
+        setZtErro("sem_zaptalk");
         return;
       }
       if (!res.ok) {
-        setChatErro("Falha de comunicação com a central. Tente novamente.");
+        setZtErro("falha");
         return;
       }
       const dataRes = (await res.json()) as { reply?: string; nome?: string };
       const withReply: ChatMsg[] = [
         ...next,
-        { role: "assistant", content: dataRes.reply ?? "" },
+        { role: "assistant", content: dataRes.reply ?? "", ts: new Date().toISOString() },
       ];
       setChat(withReply);
-      saveChat(casoId, digits, withReply);
-      if (dataRes.nome) setNome(dataRes.nome);
+      saveChat(casoId, ztDigits, withReply);
+      if (dataRes.nome) setZtNome(dataRes.nome);
     } catch {
-      setChatErro("Falha de comunicação com a central. Tente novamente.");
+      setZtErro("falha");
     } finally {
       setChatEnviando(false);
     }
-  }, [chat, chatInput, chatEnviando, numeroValido, casoId, digits]);
+  }, [chat, chatInput, chatEnviando, ztNumeroValido, casoId, ztDigits]);
 
   const limparConversa = useCallback(() => {
-    clearChat(casoId, digits);
+    clearChat(casoId, ztDigits);
     setChat([]);
-    setChatErro("");
-  }, [casoId, digits]);
+    setZtErro("");
+    setZtNome("");
+  }, [casoId, ztDigits]);
+
+  const trocarNumero = useCallback(() => {
+    setZtAtivo(false);
+    setZtErro("");
+    setChatInput("");
+  }, []);
 
   // auto-scroll da transcrição e do chat
   useEffect(() => {
@@ -395,7 +460,7 @@ export function InterrogatorioModule({
   }, [transcript]);
   useEffect(() => {
     chatScrollRef.current?.scrollTo({ top: chatScrollRef.current.scrollHeight });
-  }, [chat, chatEnviando]);
+  }, [chat, chatEnviando, ztAtivo]);
 
   // ---------- render ----------
 
@@ -410,6 +475,8 @@ export function InterrogatorioModule({
             ? failMsg
             : "PRONTO PARA DISCAR";
 
+  const ztContato = ztNome || "Desconhecido";
+
   return (
     <Panel title="INTERROGATÓRIO — LINHA SEGURA">
       <div className="itg-root">
@@ -417,229 +484,320 @@ export function InterrogatorioModule({
           <button
             type="button"
             role="tab"
-            aria-selected={mode === "voz"}
-            className={`itg-mode ${mode === "voz" ? "active" : ""}`}
-            onClick={() => setMode("voz")}
+            aria-selected={tab === "ligacao"}
+            className={`itg-mode ${tab === "ligacao" ? "active" : ""}`}
+            onClick={() => setTab("ligacao")}
           >
-            LIGAÇÃO DE VOZ
+            LIGAÇÃO
+            {emLigacao && tab !== "ligacao" && (
+              <span className="itg-tab-badge">● EM CHAMADA</span>
+            )}
           </button>
           <button
             type="button"
             role="tab"
-            aria-selected={mode === "texto"}
-            className={`itg-mode ${mode === "texto" ? "active" : ""}`}
-            onClick={() => setMode("texto")}
+            aria-selected={tab === "zaptalk"}
+            className={`itg-mode ${tab === "zaptalk" ? "active" : ""}`}
+            onClick={() => setTab("zaptalk")}
           >
-            ENTREVISTAR POR TEXTO
+            ZAPTALK (MENSAGEM)
           </button>
         </div>
 
-        {semChave && (
-          <div className="itg-aviso">
-            <strong>SISTEMA DE ESCUTA INDISPONÍVEL</strong>
-            <span>
-              A central de áudio está fora do ar. Você pode tentar{" "}
-              <button type="button" className="itg-aviso-link" onClick={() => setMode("texto")}>
-                entrevistar por texto
-              </button>
-              .
-            </span>
-          </div>
-        )}
+        {tab === "ligacao" ? (
+          <>
+            {semChave && (
+              <div className="itg-aviso">
+                <strong>SISTEMA DE ESCUTA INDISPONÍVEL</strong>
+                <span>
+                  A central de áudio está fora do ar. Você pode tentar{" "}
+                  <button type="button" className="itg-aviso-link" onClick={() => setTab("zaptalk")}>
+                    conversar via ZapTalk
+                  </button>
+                  .
+                </span>
+              </div>
+            )}
 
-        <div className="itg-grid">
-          {/* ---------- discador ---------- */}
-          <div className="itg-dialer">
-            <label className="sip-field-label" htmlFor="itg-numero">
-              Número autorizado
-            </label>
-            <input
-              id="itg-numero"
-              className="itg-display"
-              inputMode="numeric"
-              autoComplete="off"
-              placeholder="(00) 00000-0000"
-              value={maskPhone(digits)}
-              onChange={(e) => setDigits(onlyDigits(e.target.value))}
-              disabled={emLigacao}
-            />
-
-            <div className="itg-keypad">
-              {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((k) => (
-                <button
-                  key={k}
-                  type="button"
-                  className="itg-key"
+            <div className="itg-grid">
+              {/* ---------- discador ---------- */}
+              <div className="itg-dialer">
+                <label className="sip-field-label" htmlFor="itg-numero">
+                  Número autorizado
+                </label>
+                <input
+                  id="itg-numero"
+                  className="itg-display"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  placeholder="(00) 00000-0000"
+                  value={maskPhone(digits)}
+                  onChange={(e) => setDigits(onlyDigits(e.target.value))}
                   disabled={emLigacao}
-                  onClick={() => setDigits((d) => onlyDigits(d + k))}
-                >
-                  {k}
-                </button>
-              ))}
-              <button
-                type="button"
-                className="itg-key itg-key-fn"
-                disabled={emLigacao}
-                onClick={() => setDigits((d) => d.slice(0, -1))}
-                aria-label="Apagar último dígito"
-              >
-                ⌫
-              </button>
-              <button
-                type="button"
-                className="itg-key"
-                disabled={emLigacao}
-                onClick={() => setDigits((d) => onlyDigits(d + "0"))}
-              >
-                0
-              </button>
-              <button
-                type="button"
-                className="itg-key itg-key-fn"
-                disabled={emLigacao}
-                onClick={() => setDigits("")}
-                aria-label="Limpar número"
-              >
-                C
-              </button>
-            </div>
+                />
 
-            <div className={`itg-status ${phase === "falha" ? "falha" : ""} ${phase === "em_chamada" ? "vivo" : ""}`}>
-              {statusLabel}
-            </div>
-
-            {phase === "em_chamada" ? (
-              <button type="button" className="itg-desligar" onClick={desligar}>
-                DESLIGAR
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="itg-ligar"
-                disabled={!numeroValido || emLigacao}
-                onClick={ligar}
-              >
-                {phase === "chamando" || phase === "conectando" ? "LIGANDO…" : "LIGAR"}
-              </button>
-            )}
-
-            {micNegado && (
-              <p className="itg-mic-aviso">
-                Sem acesso ao microfone não há escuta por voz.{" "}
-                <button type="button" className="itg-aviso-link" onClick={() => setMode("texto")}>
-                  Usar modo texto
-                </button>
-              </p>
-            )}
-
-            <p className="itg-dica">
-              {numeros.length} número(s) autorizado(s) para escuta neste caso. Fale como um
-              detetive — pode interromper a fala do interrogado a qualquer momento.
-            </p>
-          </div>
-
-          {/* ---------- lado direito: chamada ou chat ---------- */}
-          {mode === "voz" ? (
-            <div className="itg-chamada">
-              {phase === "em_chamada" ? (
-                <>
-                  <div className="itg-em-chamada-head">
-                    <span className="itg-ao-vivo">● AO VIVO</span>
-                    <span className="itg-nome">{nome.toUpperCase()}</span>
-                    <span className="itg-cron">{fmtSegundos(segundos)}</span>
-                  </div>
-                  <div className="itg-ondas" aria-hidden="true">
-                    <span />
-                    <span />
-                    <span />
-                    <span />
-                    <span />
-                    <span />
-                    <span />
-                  </div>
-                </>
-              ) : (
-                <div className="itg-chamada-vazia">
-                  {phase === "chamando" || phase === "conectando"
-                    ? "Aguarde o estabelecimento da linha segura…"
-                    : "Disque um número autorizado e inicie a escuta."}
-                </div>
-              )}
-
-              {transcript.length > 0 && (
-                <div className="itg-transcript" ref={transcriptScrollRef}>
-                  <div className="itg-transcript-head">TRANSCRIÇÃO (MELHOR ESFORÇO)</div>
-                  {transcript.map((l, i) => (
-                    <p key={i} className={`itg-transcript-line ${l.who}`}>
-                      <span className="itg-transcript-quem">
-                        {l.who === "suspeito" ? nome || "INTERLOCUTOR" : "INVESTIGADOR"}
-                      </span>
-                      {l.text}
-                    </p>
+                <div className="itg-keypad">
+                  {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((k) => (
+                    <button
+                      key={k}
+                      type="button"
+                      className="itg-key"
+                      disabled={emLigacao}
+                      onClick={() => setDigits((d) => onlyDigits(d + k))}
+                    >
+                      {k}
+                    </button>
                   ))}
+                  <button
+                    type="button"
+                    className="itg-key itg-key-fn"
+                    disabled={emLigacao}
+                    onClick={() => setDigits((d) => d.slice(0, -1))}
+                    aria-label="Apagar último dígito"
+                  >
+                    ⌫
+                  </button>
+                  <button
+                    type="button"
+                    className="itg-key"
+                    disabled={emLigacao}
+                    onClick={() => setDigits((d) => onlyDigits(d + "0"))}
+                  >
+                    0
+                  </button>
+                  <button
+                    type="button"
+                    className="itg-key itg-key-fn"
+                    disabled={emLigacao}
+                    onClick={() => setDigits("")}
+                    aria-label="Limpar número"
+                  >
+                    C
+                  </button>
                 </div>
-              )}
-            </div>
-          ) : (
-            <div className="itg-chat-wrap">
-              <div className="itg-chat" ref={chatScrollRef}>
-                {chat.length === 0 && !chatEnviando && (
-                  <p className="itg-chat-vazio">
-                    {numeroValido
-                      ? "Nenhuma mensagem registrada para este número. Inicie a entrevista."
-                      : "Disque um número autorizado para iniciar a entrevista por texto."}
+
+                <div className={`itg-status ${phase === "falha" ? "falha" : ""} ${phase === "em_chamada" ? "vivo" : ""}`}>
+                  {statusLabel}
+                </div>
+
+                {phase === "em_chamada" ? (
+                  <button type="button" className="itg-desligar" onClick={desligar}>
+                    DESLIGAR
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="itg-ligar"
+                    disabled={!numeroValido || emLigacao}
+                    onClick={ligar}
+                  >
+                    {phase === "chamando" || phase === "conectando" ? "LIGANDO…" : "LIGAR"}
+                  </button>
+                )}
+
+                {micNegado && (
+                  <p className="itg-mic-aviso">
+                    Sem acesso ao microfone não há escuta por voz.{" "}
+                    <button type="button" className="itg-aviso-link" onClick={() => setTab("zaptalk")}>
+                      Conversar via ZapTalk
+                    </button>
                   </p>
                 )}
-                {chat.map((m, i) => (
-                  <div key={i} className={`itg-msg ${m.role === "user" ? "investigador" : "suspeito"}`}>
-                    <span className="itg-msg-quem">
-                      {m.role === "user" ? "INVESTIGADOR" : (nome || "INTERLOCUTOR").toUpperCase()}
-                    </span>
-                    {m.content}
+
+                <p className="itg-dica">
+                  {numeros.length} número(s) autorizado(s) para escuta neste caso. Fale como um
+                  detetive — pode interromper a fala do interrogado a qualquer momento.
+                </p>
+              </div>
+
+              {/* ---------- chamada ---------- */}
+              <div className="itg-chamada">
+                {phase === "em_chamada" ? (
+                  <>
+                    <div className="itg-em-chamada-head">
+                      <span className="itg-ao-vivo">● AO VIVO</span>
+                      <span className="itg-nome">{nome.toUpperCase()}</span>
+                      <span className="itg-cron">{fmtSegundos(segundos)}</span>
+                    </div>
+                    <div className="itg-ondas" aria-hidden="true">
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                  </>
+                ) : (
+                  <div className="itg-chamada-vazia">
+                    {phase === "chamando" || phase === "conectando"
+                      ? "Aguarde o estabelecimento da linha segura…"
+                      : "Disque um número autorizado e inicie a escuta."}
                   </div>
-                ))}
-                {chatEnviando && (
-                  <div className="itg-msg suspeito itg-typing" aria-label="Digitando">
-                    <span />
-                    <span />
-                    <span />
+                )}
+
+                {transcript.length > 0 && (
+                  <div className="itg-transcript" ref={transcriptScrollRef}>
+                    <div className="itg-transcript-head">TRANSCRIÇÃO (MELHOR ESFORÇO)</div>
+                    {transcript.map((l, i) => (
+                      <p key={i} className={`itg-transcript-line ${l.who}`}>
+                        <span className="itg-transcript-quem">
+                          {l.who === "suspeito" ? nome || "INTERLOCUTOR" : "INVESTIGADOR"}
+                        </span>
+                        {l.text}
+                      </p>
+                    ))}
                   </div>
                 )}
               </div>
-
-              {chatErro && <p className="itg-chat-erro">{chatErro}</p>}
-
-              <div className="itg-chat-form">
+            </div>
+          </>
+        ) : (
+          <div className="zt-wrap">
+            {!ztAtivo ? (
+              /* ---------- entrada: número com ZapTalk ---------- */
+              <div className="itg-dialer zt-form">
+                <label className="sip-field-label" htmlFor="zt-numero">
+                  Número com ZapTalk
+                </label>
                 <input
-                  className="itg-chat-input"
-                  placeholder="Digite a pergunta do investigador…"
-                  value={chatInput}
-                  disabled={!numeroValido}
-                  onChange={(e) => setChatInput(e.target.value)}
+                  id="zt-numero"
+                  className="itg-display"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  placeholder="(00) 00000-0000"
+                  value={maskPhone(ztDigits)}
+                  onChange={(e) => setZtDigits(onlyDigits(e.target.value))}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") enviarTexto();
+                    if (e.key === "Enter") iniciarConversa();
                   }}
                 />
                 <button
                   type="button"
-                  className="itg-enviar"
-                  disabled={!numeroValido || !chatInput.trim() || chatEnviando}
-                  onClick={enviarTexto}
+                  className="itg-ligar"
+                  disabled={!ztNumeroValido}
+                  onClick={iniciarConversa}
                 >
-                  ENVIAR
+                  INICIAR CONVERSA
                 </button>
-                <button
-                  type="button"
-                  className="itg-limpar"
-                  disabled={chat.length === 0}
-                  onClick={limparConversa}
-                >
-                  LIMPAR
-                </button>
+                <p className="itg-dica">
+                  Entrevista por texto interceptada via ZapTalk. O histórico de cada número fica
+                  registrado neste terminal.
+                </p>
               </div>
-            </div>
-          )}
-        </div>
+            ) : (
+              /* ---------- conversa com cara de ZapTalk ---------- */
+              <>
+                <div className="zt-phone">
+                  <div className="zt-header">
+                    <div
+                      className="zt-avatar"
+                      style={{ background: ztNome ? colorFor(ztNome) : "#8e8e93" }}
+                      aria-hidden="true"
+                    >
+                      {ztNome ? initialsOf(ztNome) : "?"}
+                    </div>
+                    <div className="zt-header-texts">
+                      <div className="zt-header-nome">{ztContato}</div>
+                      <div className={`zt-header-status ${chatEnviando ? "digitando" : ""}`}>
+                        {chatEnviando ? "digitando…" : "online"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="zt-msgs" ref={chatScrollRef}>
+                    {ztErro === "sem_zaptalk" ? (
+                      <div className="zt-vazio">
+                        <strong>NÚMERO SEM ZAPTALK ATIVO</strong>
+                        <span>
+                          Este número não possui conta no ZapTalk ou está fora de serviço.
+                        </span>
+                      </div>
+                    ) : (
+                      <>
+                        {chat.length === 0 && !chatEnviando && (
+                          <div className="zt-vazio">
+                            <span>Nenhuma mensagem por aqui. Puxe conversa.</span>
+                          </div>
+                        )}
+                        {chat.map((m, i) => {
+                          const mine = m.role === "user";
+                          const hora = fmtHora(m.ts);
+                          return (
+                            <div key={i} className={`zt-bubble-row${mine ? " mine" : ""}`}>
+                              <div className={`zt-bubble${mine ? " mine" : ""}`}>
+                                <div className="zt-bubble-text">{m.content}</div>
+                                <div className="zt-bubble-meta">
+                                  {hora && <span>{hora}</span>}
+                                  {mine && <span className="zt-ticks">✓✓</span>}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        {chatEnviando && (
+                          <div className="zt-bubble-row">
+                            <div className="zt-bubble zt-typing" aria-label="Digitando">
+                              <span />
+                              <span />
+                              <span />
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  <div className="zt-inputbar">
+                    <input
+                      className="zt-input"
+                      placeholder="Mensagem"
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") enviarTexto();
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="zt-send"
+                      disabled={!chatInput.trim() || chatEnviando}
+                      onClick={enviarTexto}
+                      aria-label="Enviar mensagem"
+                    >
+                      ↑
+                    </button>
+                  </div>
+                </div>
+
+                {ztErro === "indisponivel" && (
+                  <div className="itg-aviso zt-aviso">
+                    <strong>SISTEMA INDISPONÍVEL</strong>
+                    <span>A central de mensagens está fora do ar. Tente novamente mais tarde.</span>
+                  </div>
+                )}
+                {ztErro === "falha" && (
+                  <p className="itg-chat-erro">Falha de comunicação com a central. Tente novamente.</p>
+                )}
+
+                <div className="zt-actions">
+                  <button type="button" className="itg-limpar" onClick={trocarNumero}>
+                    TROCAR NÚMERO
+                  </button>
+                  <button
+                    type="button"
+                    className="itg-limpar"
+                    disabled={chat.length === 0}
+                    onClick={limparConversa}
+                  >
+                    LIMPAR CONVERSA
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </Panel>
   );
